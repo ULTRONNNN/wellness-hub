@@ -71,3 +71,20 @@ This is an educational prototype, **not a medical device**. RAG uses a small ill
 - `PATCH /api/appointments/:id/cancel`
 - `GET /api/dashboard/summary` (doctor/admin)
 - `GET /api/health`
+
+
+---
+
+## 👨‍💻 Project Contributors
+
+**Project Name:** Wellness Hub – AI Healthcare Assistant
+
+**Team Members:**
+`
+1. **Shaik Ashraf Gani**
+2. **Rahul Topinkatti**
+3. **Yamuna K K**
+
+**Institution:** Presidency University, Bengaluru
+
+**Program:** Master of Computer Applications (MCA)
