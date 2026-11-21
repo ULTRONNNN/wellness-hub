@@ -1,0 +1,1211 @@
+
+:root {
+  --teal: #08a999;
+  --ink: #183b4c;
+  --background: #f5f9fb;
+  --muted: #607d8b;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button, input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+h1, h2, h3, p {
+  margin-top: 0;
+}
+
+h1, h2, h3 {
+  color: var(--ink);
+}
+
+.muted {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.error-text {
+  color: #d32f2f;
+  font-size: 14px;
+  margin: 12px 0;
+  overflow-wrap: anywhere;
+}
+
+.success-text {
+  color: #168447;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.primary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--teal);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 13px 19px;
+  font-weight: 600;
+}
+
+.outline-btn {
+  border: 1px solid #d6e1e5;
+  border-radius: 12px;
+  background: white;
+  color: var(--ink);
+  padding: 12px 18px;
+}
+
+.text-btn {
+  border: none;
+  background: transparent;
+  color: var(--teal);
+  font-weight: 600;
+  padding: 10px;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  padding: 10px;
+  border-radius: 12px;
+}
+
+/* Authentication */
+
+.auth-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+}
+
+.auth-box {
+  width: 100%;
+  max-width: 430px;
+}
+
+.auth-logo {
+  width: 76px;
+  height: 76px;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--teal);
+  background: #e2f7f2;
+  margin-bottom: 25px;
+}
+
+.auth-box h1 {
+  font-size: 34px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.auth-fields {
+  margin-top: 34px;
+  display: grid;
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  border: 1px solid #aabcc4;
+  border-radius: 14px;
+  padding: 0 16px;
+  height: 55px;
+  color: var(--muted);
+}
+
+.field:focus-within {
+  border-color: var(--teal);
+}
+
+.field input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--ink);
+}
+
+.auth-submit {
+  width: 100%;
+  height: 54px;
+  margin-top: 22px;
+}
+
+.auth-switch {
+  display: block;
+  margin: 14px auto 0;
+}
+
+.disclaimer {
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.6;
+  margin-top: 26px;
+}
+
+/* Main application */
+
+.app-shell {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--background);
+}
+
+.app-header {
+  flex-shrink: 0;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px;
+  background: var(--background);
+  border-bottom: 1px solid #e6eef0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--teal);
+}
+
+.brand strong {
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.logout-btn {
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  padding: 10px;
+}
+
+.main-area {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.main-area > div[hidden] {
+  display: none !important;
+}
+
+.tab-panel {
+  height: 100%;
+  min-height: 0;
+}
+
+.page-content {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 22px;
+}
+
+.page-content h1 {
+  font-size: 27px;
+  font-weight: 800;
+  margin-bottom: 7px;
+}
+
+.hero-card {
+  margin-top: 25px;
+  padding: 24px;
+  background: linear-gradient(135deg, #08a999, #087e8d);
+  border-radius: 24px;
+  color: white;
+}
+
+.hero-card h2 {
+  color: white;
+  font-size: 23px;
+  font-weight: 800;
+  margin: 14px 0 9px;
+}
+
+.hero-card p {
+  line-height: 1.5;
+}
+
+.hero-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  color: var(--teal);
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.section-title {
+  font-size: 21px;
+  margin: 24px 0 12px;
+}
+
+.specialist-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  border: 1px solid #edf1f3;
+  border-radius: 14px;
+  padding: 18px;
+  text-align: left;
+  color: var(--ink);
+  box-shadow: 0 2px 7px #183b4c08;
+}
+
+.round-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: #e2f7f2;
+  color: var(--teal);
+}
+
+.specialist-text {
+  display: grid;
+  gap: 5px;
+  flex: 1;
+}
+
+.specialist-text small {
+  color: var(--muted);
+}
+
+.notice-card {
+  margin-top: 16px;
+  background: white;
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Bottom navigation */
+
+.bottom-nav {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-around;
+  background: white;
+  border-top: 1px solid #e7eff0;
+  padding: 8px 8px max(10px, env(safe-area-inset-bottom));
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  border: none;
+  border-radius: 13px;
+  background: transparent;
+  color: #657a86;
+  padding: 9px 4px;
+  font-size: 12px;
+}
+
+.nav-item.active {
+  background: #e2f7f2;
+  color: var(--teal);
+  font-weight: 700;
+}
+
+/* Chat */
+
+.chat-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e8eff1;
+}
+
+.chat-header h2 {
+  font-size: 21px;
+  margin: 0 0 4px;
+}
+
+.chat-header small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 5px;
+}
+
+.header-buttons button {
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  padding: 9px;
+}
+
+.chat-messages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 15px;
+}
+
+.chat-welcome {
+  min-height: 100%;
+  max-width: 480px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.bot-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: #e0f7f2;
+  color: var(--teal);
+}
+
+.chat-welcome h2 {
+  font-size: 23px;
+  margin: 8px 0 0;
+}
+
+.suggestion {
+  background: white;
+  color: var(--ink);
+  border: 1px solid #d9e5e8;
+  border-radius: 24px;
+  padding: 10px 15px;
+}
+
+.message-list {
+  max-width: 850px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.message {
+  max-width: 82%;
+  padding: 15px;
+  border-radius: 18px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.message.mine {
+  align-self: flex-end;
+  background: var(--teal);
+  color: white;
+}
+
+.message.theirs {
+  align-self: flex-start;
+  background: white;
+  color: var(--ink);
+}
+
+.thinking {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.chat-input-bar {
+  flex-shrink: 0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: white;
+  padding: 12px 14px 18px;
+}
+
+.chat-input-bar input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px;
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+.send-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: var(--teal);
+  color: white;
+}
+
+/* Doctors */
+
+.doctor-search {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.doctor-search input {
+  flex: 1;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid #aabcc4;
+  border-radius: 14px;
+  background: white;
+  outline-color: var(--teal);
+}
+
+.matched-text,
+.teal-text {
+  color: var(--teal);
+}
+
+.matched-text {
+  font-weight: 700;
+  margin-top: 10px;
+}
+
+.doctor-list,
+.appointment-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.doctor-card,
+.appointment-card {
+  background: white;
+  border-radius: 14px;
+  padding: 16px;
+  border: 1px solid #edf1f3;
+}
+
+.doctor-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.doctor-heading > div {
+  display: grid;
+  gap: 4px;
+}
+
+.doctor-heading strong {
+  color: var(--ink);
+  font-size: 16px;
+}
+
+.doctor-card p {
+  margin: 6px 0;
+  font-size: 14px;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.loading-text,
+.empty-text {
+  color: var(--muted);
+  text-align: center;
+  padding: 35px 10px;
+}
+
+/* Booking */
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: var(--ink);
+  padding: 10px 0;
+  margin-bottom: 18px;
+  font-weight: 700;
+}
+
+.booking-section {
+  display: grid;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.date-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  background: white;
+  border: 1px solid #b8cbd0;
+  border-radius: 14px;
+  padding: 12px;
+  color: var(--teal);
+}
+
+.date-picker input {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--ink);
+}
+
+.slots-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.slot-chip {
+  border: 1px solid #c8e5e0;
+  background: white;
+  border-radius: 24px;
+  padding: 10px 15px;
+  color: var(--ink);
+}
+
+/* Appointments */
+
+.page-heading-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.appointment-card h3 {
+  font-size: 17px;
+  margin-bottom: 6px;
+}
+
+.appointment-card p {
+  margin: 8px 0;
+}
+
+.appointment-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-booked {
+  color: var(--teal);
+}
+
+.status-cancelled {
+  color: #d32f2f;
+}
+
+/* Modal and history */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: #0b253d70;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  border-radius: 22px;
+  padding: 25px;
+  box-shadow: 0 18px 55px #0b253d25;
+}
+
+.modal-card h2 {
+  font-size: 21px;
+  margin-bottom: 12px;
+}
+
+.modal-card p {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.history-sheet {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 600px;
+  max-height: 75vh;
+  overflow-y: auto;
+  background: white;
+  border-radius: 22px 22px 0 0;
+  padding: 22px;
+}
+
+.history-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.history-heading button {
+  border: none;
+  background: transparent;
+  color: var(--ink);
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 16px 8px;
+  border: none;
+  border-bottom: 1px solid #edf1f3;
+  background: white;
+  text-align: left;
+  color: var(--ink);
+}
+
+.loading-screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  color: var(--teal);
+  font-weight: 700;
+}
+
+
+@media (min-width: 900px) {
+  .app-shell {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border: none;
+  }
+
+  .page-content {
+    width: 100%;
+    max-width: none;
+    padding: 30px 45px;
+  }
+}
+
+
+@media (max-width: 480px) {
+  .page-content {
+    padding: 18px;
+  }
+
+  .auth-screen {
+    padding: 24px;
+  }
+
+  .modal-actions {
+    flex-wrap: wrap;
+  }
+}
+
+
+/* ===== FULL SCREEN CHAT ALIGNMENT FIX ===== */
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.app-shell {
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  margin: 0;
+}
+
+.main-area {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.main-area > .tab-panel {
+  height: 100%;
+  min-height: 0;
+}
+
+.chat-page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.chat-header {
+  flex-shrink: 0;
+  background: #f5f9fb;
+  z-index: 2;
+}
+
+.chat-messages {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 24px 30px;
+  scroll-behavior: smooth;
+}
+
+.message-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  gap: 14px;
+}
+
+.message {
+  display: block;
+  width: fit-content;
+  max-width: min(78%, 750px);
+  padding: 15px 18px;
+  border-radius: 18px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.message.mine {
+  align-self: flex-end;
+  background: #08a999;
+  color: white;
+}
+
+.message.theirs {
+  align-self: flex-start;
+  background: white;
+  color: #183b4c;
+}
+
+.chat-input-bar {
+  flex-shrink: 0;
+  width: 100%;
+  background: white;
+  border-top: 1px solid #e5edf0;
+  padding: 12px 24px;
+}
+
+.bottom-nav {
+  flex-shrink: 0;
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .chat-messages {
+    padding: 16px;
+  }
+
+  .message {
+    max-width: 88%;
+  }
+
+  .chat-input-bar {
+    padding: 10px 14px;
+  }
+}
+
+
+@media (min-width: 900px) {
+  .page-content {
+    padding: 20px 32px;
+  }
+
+  .page-content h1 {
+    font-size: 24px;
+  }
+
+  .chat-messages {
+    padding: 16px 24px;
+  }
+
+  .message {
+    font-size: 14px;
+    padding: 12px 15px;
+  }
+
+  .app-header {
+    min-height: 58px;
+  }
+
+  .nav-item {
+    padding: 6px 4px;
+  }
+}
+
+
+
+/* ===== CORRECTED APP SCROLLING ===== */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.app-shell {
+  height: 100dvh;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.app-header,
+.bottom-nav {
+  flex-shrink: 0;
+}
+
+/* Appointments, doctors, booking and home scroll inside the shell. */
+.main-area {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Content panels must grow to show all cards, not clip at viewport height. */
+.main-area > .tab-panel:not(:has(.chat-page)) {
+  height: auto;
+  min-height: 100%;
+}
+
+.appointment-list {
+  height: auto;
+  overflow: visible;
+  padding-bottom: 24px;
+}
+
+/* Chat keeps its own message-scrolling region. */
+.main-area:has(.chat-page) {
+  overflow: hidden;
+}
+
+.main-area > .tab-panel:has(.chat-page) {
+  height: 100%;
+  min-height: 0;
+}
+
+.chat-page {
+  height: 100%;
+  min-height: 0;
+}
+
+
+/* MY BOOKINGS — INDEPENDENT SCROLL FIX */
+
+/* Stop the entire page from scrolling */
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Keep the application layout fixed */
+.app-shell {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* Prevent the outer area from scrolling on bookings */
+.main-area:has(.appointment-list) {
+  overflow: hidden !important;
+  min-height: 0;
+}
+
+/* Make the appointments screen fill available space */
+.tab-panel:has(.appointment-list) {
+  height: 100% !important;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Keep My Appointments heading above the scroll area */
+.tab-panel:has(.appointment-list) .page-content {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tab-panel:has(.appointment-list) .page-heading-row {
+  flex-shrink: 0;
+}
+
+/* ONLY THE DOCTOR APPOINTMENT CARDS SCROLL */
+.appointment-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  align-content: start;
+  padding-bottom: 30px;
+  scrollbar-width: thin;
+}
+
+/* Keep bottom navigation visible */
+.bottom-nav {
+  flex-shrink: 0;
+}
+
+
+/* =========================================
+   ALL PAGES — INDEPENDENT CONTENT SCROLL
+   Keep existing MY BOOKINGS fix
+========================================= */
+
+/* Keep entire application inside screen */
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+.app-shell {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Fixed top header and bottom navigation */
+.app-header,
+.bottom-nav {
+  flex-shrink: 0;
+}
+
+/* Prevent outer page scrolling */
+.main-area {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden !important;
+}
+
+/* Each tab fills the available screen */
+.main-area > .tab-panel {
+  height: 100%;
+  min-height: 0;
+}
+
+/* HOME, DOCTORS, BOOK APPOINTMENT:
+   Scroll their content, not the entire page */
+.tab-panel:not(:has(.appointment-list)):not(:has(.chat-page)) {
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+/* Ensure content has space at the bottom */
+.tab-panel:not(:has(.appointment-list)):not(:has(.chat-page))
+.page-content {
+  min-height: 100%;
+  height: auto;
+  padding-bottom: 40px;
+}
+
+/* BOOKINGS:
+   Preserve your working independent list scroll */
+.tab-panel:has(.appointment-list) {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tab-panel:has(.appointment-list) .page-content {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.appointment-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  align-content: start;
+  padding-bottom: 30px;
+}
+
+/* CAREBOT:
+   Only chat messages scroll */
+.tab-panel:has(.chat-page) {
+  overflow: hidden;
+}
+
+.chat-page {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-messages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+}
+
+
+/* =====================================
+   DOCTORS PAGE — INDEPENDENT SCROLL FIX
+   Same behavior as My Bookings
+===================================== */
+
+/* Prevent the outer Doctors page from scrolling */
+.main-area:has(.doctor-list) {
+  overflow: hidden !important;
+  min-height: 0;
+}
+
+/* Make Doctors tab fill the available space */
+.tab-panel:has(.doctor-list) {
+  height: 100% !important;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Make the Doctors page a vertical layout */
+.tab-panel:has(.doctor-list) .page-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Keep heading and search controls fixed */
+.tab-panel:has(.doctor-list) .page-content > :not(.doctor-list) {
+  flex-shrink: 0;
+}
+
+/* Scroll ONLY the doctor cards */
+.doctor-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  align-content: start;
+  padding-bottom: 30px;
+  scrollbar-width: thin;
+}
+
+/* Keep navigation fixed */
+.app-header,
+.bottom-nav {
+  flex-shrink: 0;
+}
