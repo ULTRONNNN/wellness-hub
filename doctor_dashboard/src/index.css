@@ -1,0 +1,12 @@
+
+html {
+  font-family: 'DM Sans', sans-serif;
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+}
+#root {
+  min-height: 100vh;
+}

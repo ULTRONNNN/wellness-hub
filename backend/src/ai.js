@@ -149,7 +149,7 @@ async function availableSlots(doctorId, date) {
     return { error: 'Doctor not found.' };
   }
 
-  const start = new Date(`${date}T00:00:00.000Z`);
+  const start = new Date(`${date}T00:00:00+05:30`);
   const end = new Date(start.getTime() + 86400000);
 
   const booked = await Appointment.find({
@@ -166,7 +166,9 @@ async function availableSlots(doctorId, date) {
   );
 
   const slots = (doctor.slots || [])
-    .map(time => `${date}T${time}:00.000Z`)
+    .map(time =>
+  new Date(`${date}T${time}:00+05:30`).toISOString()
+)
     .filter(value => {
       const parsed = new Date(value);
 
