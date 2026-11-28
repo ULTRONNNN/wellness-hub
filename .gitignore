@@ -1,11 +1,21 @@
 node_modules/
 .env
+.env.*
+!.env.example
 .dart_tool/
 .flutter-plugins*
 build/
 dist/
 coverage/
 *.log
+*.bak
 
-.env.*
-!.env.example
+# Local medical reports
+backend/report1.pdf
+backend/report2.pdf
+
+# Local administration script
+backend/src/updateAdmin.js
+
+# Local OCR model
+backend/eng.traineddata

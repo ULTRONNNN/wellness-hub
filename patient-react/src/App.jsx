@@ -1,4 +1,6 @@
-
+import ReportAttachment from "./ReportAttachment";
+import ReportsPage from "./ReportsPage";
+import { FileText } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
   Heart, LogOut, Home, MessageCircle, Stethoscope,
@@ -162,40 +164,19 @@ function AuthPage({ onLogin }) {
   );
 }
 
-function Overview({ name, onChat, onDoctors }) {
-  return (
-    <div className="page-content">
-      <h1>Hello, {String(name || "").split(" ")[0]} 👋</h1>
-      <p className="muted">How can we help you feel better today?</p>
-
-      <div className="hero-card">
-        <Bot size={36} />
-        <h2>Your AI health companion</h2>
-        <p>Ask health questions and prepare for your next doctor visit.</p>
-        <button className="hero-button" onClick={onChat}>
-          <MessageCircle size={19} /> Start chatting
-        </button>
-      </div>
-
-      <h2 className="section-title">Explore care</h2>
-      <button className="specialist-card" onClick={onDoctors}>
-        <span className="round-icon"><Stethoscope size={24} /></span>
-        <span className="specialist-text">
-          <strong>Find a specialist</strong>
-          <small>Browse doctors and book available slots</small>
-        </span>
-        <ArrowRight size={18} />
-      </button>
-
-      <div className="notice-card">
-        <Info size={22} color="#e39a27" />
-        <span>
-          Emergency? Call your local emergency number.
-          Do not rely on this app for urgent care.
-        </span>
-      </div>
-    </div>
-  );
+function Overview({ name, onChat, onDoctors, onBookings, onReports }) {
+  const actions = [
+    { icon: MessageCircle, title: "Talk to CareBot", detail: "Ask questions about your health", action: onChat },
+    { icon: Stethoscope, title: "Find a specialist", detail: "Discover doctors and available slots", action: onDoctors },
+    { icon: CalendarDays, title: "My appointments", detail: "View and manage your bookings", action: onBookings },
+    { icon: FileText, title: "Medical reports", detail: "Review your stored reports", action: onReports },
+  ];
+  return <div className="page-content overview-page">
+    <div className="welcome-heading"><span className="eyebrow">YOUR PERSONAL HEALTH SPACE</span><h1>Hello, {String(name || "there").split(" ")[0]}!</h1><p className="muted">A little care today makes a difference tomorrow.</p></div>
+    <div className="hero-card"><div className="hero-copy"><span className="hero-label">AI HEALTH COMPANION</span><h2>Better care starts<br/>with a conversation.</h2><p>Explore health questions, understand symptoms and prepare for your next consultation with CareBot.</p><button className="hero-button" onClick={onChat}>Start a conversation <ArrowRight size={19}/></button></div><div className="hero-art" aria-hidden="true"><div className="hero-orbit"><Bot size={100} strokeWidth={1.3}/></div></div></div>
+    <h2 className="section-title">Explore your care</h2><div className="quick-grid">{actions.map(({icon: Icon,title,detail,action}) => <button key={title} className="quick-card" onClick={action}><span className="round-icon"><Icon size={25}/></span><strong>{title}</strong><small>{detail}</small><ArrowRight className="quick-arrow" size={19}/></button>)}</div>
+    <div className="notice-card"><Info size={24}/><span><strong>Care when it matters</strong><br/>For emergencies, call your local emergency number. Wellness Hub is an educational assistant, not a substitute for medical care.</span></div>
+  </div>;
 }
 
 function ChatPage() {
@@ -207,6 +188,7 @@ function ChatPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const bottomRef = useRef(null);
+  const chatRef = useRef(null);
   const busyRef = useRef(false);
 
   async function loadConversations() {
@@ -223,7 +205,7 @@ function ChatPage() {
   }, []);
 
  useEffect(() => {
-  const chatContainer = document.querySelector(".chat-messages");
+  const chatContainer = chatRef.current;
 
   if (chatContainer) {
     chatContainer.scrollTo({
@@ -235,6 +217,8 @@ function ChatPage() {
   function newChat() {
     if (busyRef.current) return;
     setConversationId(null);
+    setInput("");
+    setHistoryOpen(false);
     setMessages([]);
     setError("");
   }
@@ -242,7 +226,8 @@ function ChatPage() {
   function openChat(conversation) {
     if (busyRef.current) return;
     setConversationId(conversation._id);
-    setMessages(conversation.messages || []);
+    setMessages(Array.isArray(conversation.messages) ? conversation.messages : []);
+    setInput("");
     setError("");
     setHistoryOpen(false);
   }
@@ -250,6 +235,7 @@ function ChatPage() {
   async function send(override) {
     const message = String(override ?? input).trim();
     if (!message || busyRef.current) return;
+    if (message.length > 2000) { setError("Please limit your message to 2000 characters."); return; }
 
     busyRef.current = true;
     setInput("");
@@ -268,8 +254,11 @@ function ChatPage() {
         },
       });
 
+      if (!result?.conversationId || !Array.isArray(result.messages)) {
+        throw new Error("Unexpected chat response from the server.");
+      }
       setConversationId(result.conversationId);
-      setMessages(result.messages || []);
+      setMessages(result.messages);
       await loadConversations();
     } catch (e) {
       setMessages((previous) => {
@@ -307,15 +296,14 @@ function ChatPage() {
         </div>
       </div>
 
-      <div className="chat-messages">
+      <div className="chat-messages" ref={chatRef}>
         {messages.length === 0 ? (
           <div className="chat-welcome">
             <div className="bot-avatar"><Bot size={38} /></div>
             <h2>What is on your mind?</h2>
             <p className="muted">
-              Tell me about a health question or symptom.
-              I can share general information and help you
-              prepare for a consultation.
+              Ask about health, education, technology or everyday topics.
+              I can also help you find a specialist and prepare for a consultation.
             </p>
             <button className="suggestion"
               disabled={busy}
@@ -332,7 +320,8 @@ function ChatPage() {
           <div className="message-list">
             {messages.map((message, index) => (
               <div key={index}
-                className={`message ${message.role === "user" ? "mine" : "theirs"}`}>
+                className={`message ${message.role === "user" ? "mine" : "theirs"}`}
+                style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
                 {message.content}
               </div>
             ))}
@@ -344,19 +333,28 @@ function ChatPage() {
 
       <ErrorText message={error} />
 
-      <form className="chat-input-bar" onSubmit={(e) => {
-        e.preventDefault();
-        send();
-      }}>
-        <input
-          placeholder="Ask about your health..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-        />
-        <button className="send-button" disabled={busy} type="submit">
-          <Send size={21} />
-        </button>
-      </form>
+   <form className="chat-input-bar" onSubmit={(e) => {
+  e.preventDefault();
+  if (e.target !== e.currentTarget) return;
+  send();
+}}>
+
+  <ReportAttachment />
+
+  <input
+    placeholder="Ask CareBot anything..."
+    aria-label="Chat message"
+    maxLength={2000}
+    disabled={busy}
+    value={input}
+    onChange={(e) => setInput(e.target.value)}
+  />
+
+  <button className="send-button" aria-label="Send message" disabled={busy || !input.trim()} type="submit">
+    <Send size={21} />
+  </button>
+
+</form>
 
       {historyOpen && (
         <div className="modal-overlay" onClick={() => setHistoryOpen(false)}>
@@ -467,6 +465,42 @@ function DoctorsPage() {
                 {doctor.qualification || ""} • {doctor.experience || 0} years experience
               </p>
               <p>{doctor.hospital || ""}</p>
+              {doctor.address && (
+  <p>
+    📍 {doctor.address}, {doctor.city}
+  </p>
+)}
+
+{doctor.hospital && (
+  <a
+    href={
+      "https://www.google.com/maps/dir/?api=1&destination=" +
+      encodeURIComponent(
+        [
+          doctor.hospital,
+          doctor.address,
+          doctor.city,
+          "India"
+        ].filter(Boolean).join(", ")
+      )
+    }
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{
+      display: "block",
+      textAlign: "center",
+      border: "1px solid #0d9488",
+      borderRadius: 10,
+      padding: 12,
+      color: "#0d9488",
+      fontWeight: 600,
+      textDecoration: "none",
+      margin: "12px 0"
+    }}
+  >
+    📍 Get Directions
+  </a>
+)}
               <div className="card-actions">
                 <button className="primary-btn"
                   onClick={() => setSelectedDoctor(doctor)}>
@@ -696,12 +730,12 @@ function AppointmentsPage() {
                 <CalendarDays size={17} /> {dateTime(appointment.slot)}
               </p>
               <p className={
-                appointment.status === "booked"
-                  ? "status-booked" : "status-cancelled"
+                ["booked", "pending", "confirmed"].includes(appointment.status)
+                  ? "status-booked" : appointment.status === "cancelled" ? "status-cancelled" : "muted"
               }>
                 Status: {appointment.status}
               </p>
-              {appointment.status === "booked" && (
+              {["booked", "pending", "confirmed"].includes(appointment.status) && (
                 <div className="card-actions">
                   <button className="text-btn"
                     onClick={() => setCancelTarget(appointment)}>
@@ -774,47 +808,84 @@ export default function App() {
     return <AuthPage onLogin={onLogin} />;
   }
 
-  const tabs = [
-    { label: "Home", icon: Home },
-    { label: "AI Chat", icon: MessageCircle },
-    { label: "Doctors", icon: Stethoscope },
-    { label: "Bookings", icon: CalendarDays },
-  ];
+ const tabs = [
+  { label: "Home", icon: Home },
+  { label: "AI Chat", icon: MessageCircle },
+  { label: "Doctors", icon: Stethoscope },
+  { label: "Bookings", icon: CalendarDays },
+  { label: "Reports", icon: FileText },
+];
 
   return (
     <div className="app-shell">
       <header className="app-header">
         <div className="brand">
           <Heart size={25} fill="currentColor" />
-          <strong>Wellness Hub</strong>
+          <div><strong>Wellness Hub</strong><small>Patient workspace</small></div>
         </div>
-        <button className="logout-btn" title="Sign out" onClick={logout}>
+        <div className="profile-group"><span className="profile-avatar"><UserRound size={20}/></span><span className="profile-name">{user.name}</span><button className="logout-btn" title="Sign out" onClick={logout}>
           <LogOut size={22} />
-        </button>
+        </button></div>
       </header>
 
-      <main className="main-area">
-        <div hidden={tab !== 0}>
-          <Overview
-            name={user.name}
-            onChat={() => setTab(1)}
-            onDoctors={() => setTab(2)}
-          />
-        </div>
-        <div className="tab-panel" hidden={tab !== 1}><ChatPage /></div>
-        <div className="tab-panel" hidden={tab !== 2}><DoctorsPage /></div>
-        <div className="tab-panel" hidden={tab !== 3}><AppointmentsPage /></div>
-      </main>
+   <main
+  className="main-area"
+  style={{
+    flex: "1 1 0",
+    minHeight: 0,
+    position: "relative",
+    overflow: "hidden"
+  }}
+>
+  <div hidden={tab !== 0}>
+    <Overview
+      name={user.name}
+      onChat={() => setTab(1)}
+      onDoctors={() => setTab(2)}
+      onBookings={() => setTab(3)}
+      onReports={() => setTab(4)}
+    />
+  </div>
 
-      <nav className="bottom-nav">
+  <div className="tab-panel" hidden={tab !== 1}>
+    <ChatPage />
+  </div>
+
+  <div className="tab-panel" hidden={tab !== 2}>
+    <DoctorsPage />
+  </div>
+
+  <div className="tab-panel" hidden={tab !== 3}>
+    <AppointmentsPage />
+  </div>
+
+  {tab === 4 && (
+    <div
+      id="reports-scroll-container"
+      style={{
+        position: "absolute",
+        inset: 0,
+        overflowY: "auto",
+        overflowX: "hidden",
+        overscrollBehavior: "contain"
+      }}
+    >
+      <ReportsPage />
+    </div>
+  )}
+</main>
+
+      <nav className="bottom-nav" aria-label="Patient navigation"><div className="nav-brand"><Heart size={28} fill="currentColor"/><div><strong>Wellness Hub</strong><small>HEALTHCARE ASSISTANT</small></div></div><div className="nav-caption">WORKSPACE</div>
         {tabs.map(({ label, icon: Icon }, index) => (
           <button key={label}
             className={tab === index ? "nav-item active" : "nav-item"}
+            aria-current={tab === index ? "page" : undefined}
             onClick={() => setTab(index)}>
             <Icon size={23} />
             <span>{label}</span>
           </button>
         ))}
+        <div className="nav-footer"><Heart size={18}/> Your care, connected.</div>
       </nav>
     </div>
   );

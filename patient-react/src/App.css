@@ -1,4 +1,3 @@
-
 :root {
   --teal: #08a999;
   --ink: #183b4c;
@@ -6,11 +5,28 @@
   --muted: #607d8b;
 }
 
-#root {
-  min-height: 100vh;
+/* GLOBAL SETTINGS */
+  
+* {
+  box-sizing: border-box;
 }
 
-button, input {
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow: hidden;
+  background: var(--background);
+}
+
+button,
+input {
   font: inherit;
 }
 
@@ -23,11 +39,16 @@ button:disabled {
   cursor: not-allowed;
 }
 
-h1, h2, h3, p {
+h1,
+h2,
+h3,
+p {
   margin-top: 0;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   color: var(--ink);
 }
 
@@ -50,6 +71,8 @@ h1, h2, h3 {
   gap: 8px;
   margin: 12px 0;
 }
+
+/* BUTTONS */
 
 .primary-btn {
   display: inline-flex;
@@ -91,19 +114,20 @@ h1, h2, h3 {
   border-radius: 12px;
 }
 
-/* Authentication */
+/* AUTHENTICATION */
 
 .auth-screen {
-  min-height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
   padding: 28px;
 }
 
 .auth-box {
   width: 100%;
   max-width: 430px;
+  margin: auto;
 }
 
 .auth-logo {
@@ -174,12 +198,17 @@ h1, h2, h3 {
   margin-top: 26px;
 }
 
-/* Main application */
+/* MAIN APPLICATION */
 
 .app-shell {
+  width: 100%;
   height: 100dvh;
+  max-width: none;
+  min-height: 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   background: var(--background);
 }
 
@@ -214,17 +243,35 @@ h1, h2, h3 {
   padding: 10px;
 }
 
+/* MAIN SCROLLING LAYOUT */
+
 .main-area {
-  flex: 1;
+  flex: 1 1 0;
   min-height: 0;
-  overflow: auto;
+  width: 100%;
+  overflow: hidden;
 }
+
+/* Each page gets its own scrolling area */
+
+.main-area > div {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+/* Hidden pages must not affect visible pages */
 
 .main-area > div[hidden] {
   display: none !important;
 }
 
 .tab-panel {
+  width: 100%;
   height: 100%;
   min-height: 0;
 }
@@ -234,6 +281,7 @@ h1, h2, h3 {
   max-width: 900px;
   margin: 0 auto;
   padding: 22px;
+  padding-bottom: 35px;
 }
 
 .page-content h1 {
@@ -241,6 +289,8 @@ h1, h2, h3 {
   font-weight: 800;
   margin-bottom: 7px;
 }
+
+/* HOME PAGE */
 
 .hero-card {
   margin-top: 25px;
@@ -327,22 +377,26 @@ h1, h2, h3 {
   line-height: 1.5;
 }
 
-/* Bottom navigation */
+/* BOTTOM NAVIGATION */
 
 .bottom-nav {
   flex-shrink: 0;
+  width: 100%;
   display: flex;
   justify-content: space-around;
   background: white;
   border-top: 1px solid #e7eff0;
   padding: 8px 8px max(10px, env(safe-area-inset-bottom));
+  z-index: 10;
 }
 
 .nav-item {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 5px;
   border: none;
   border-radius: 13px;
@@ -358,12 +412,21 @@ h1, h2, h3 {
   font-weight: 700;
 }
 
-/* Chat */
+/* AI CHAT */
+
+/* Only the chat panel disables outer scrolling */
+
+.main-area > div:has(.chat-page) {
+  overflow: hidden;
+}
 
 .chat-page {
+  width: 100%;
   height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .chat-header {
@@ -373,6 +436,8 @@ h1, h2, h3 {
   align-items: center;
   padding: 12px 16px;
   border-bottom: 1px solid #e8eff1;
+  background: var(--background);
+  z-index: 2;
 }
 
 .chat-header h2 {
@@ -397,11 +462,17 @@ h1, h2, h3 {
   padding: 9px;
 }
 
+/* Only messages scroll */
+
 .chat-messages {
-  flex: 1;
+  flex: 1 1 0;
   min-height: 0;
+  width: 100%;
   overflow-y: auto;
-  padding: 15px;
+  overflow-x: hidden;
+  padding: 20px;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
 }
 
 .chat-welcome {
@@ -441,18 +512,21 @@ h1, h2, h3 {
 }
 
 .message-list {
-  max-width: 850px;
-  margin: auto;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
 
 .message {
-  max-width: 82%;
-  padding: 15px;
+  display: block;
+  width: fit-content;
+  max-width: min(82%, 750px);
+  padding: 15px 18px;
   border-radius: 18px;
-  line-height: 1.45;
+  line-height: 1.55;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
@@ -474,13 +548,22 @@ h1, h2, h3 {
   font-size: 14px;
 }
 
+.chat-page > .error-text {
+  flex-shrink: 0;
+  padding: 0 15px;
+}
+
+/* Chat input remains at bottom */
+
 .chat-input-bar {
   flex-shrink: 0;
+  width: 100%;
   display: flex;
   gap: 10px;
   align-items: center;
   background: white;
-  padding: 12px 14px 18px;
+  border-top: 1px solid #e5edf0;
+  padding: 12px 24px;
 }
 
 .chat-input-bar input {
@@ -493,6 +576,7 @@ h1, h2, h3 {
 }
 
 .send-button {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -504,7 +588,7 @@ h1, h2, h3 {
   color: white;
 }
 
-/* Doctors */
+/* DOCTORS PAGE */
 
 .doctor-search {
   display: flex;
@@ -537,6 +621,9 @@ h1, h2, h3 {
   display: grid;
   gap: 12px;
   margin-top: 20px;
+  height: auto;
+  overflow: visible;
+  padding-bottom: 25px;
 }
 
 .doctor-card,
@@ -582,7 +669,7 @@ h1, h2, h3 {
   padding: 35px 10px;
 }
 
-/* Booking */
+/* BOOK APPOINTMENT */
 
 .back-btn {
   display: flex;
@@ -635,7 +722,12 @@ h1, h2, h3 {
   color: var(--ink);
 }
 
-/* Appointments */
+.slot-chip:hover {
+  background: #e2f7f2;
+  border-color: var(--teal);
+}
+
+/* MY APPOINTMENTS */
 
 .page-heading-row {
   display: flex;
@@ -666,7 +758,41 @@ h1, h2, h3 {
   color: #d32f2f;
 }
 
-/* Modal and history */
+/* MEDICAL REPORTS SCROLLING */
+
+.main-area > .tab-panel:has(.reports-page) {
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+}
+
+.reports-page {
+  width: 100%;
+  max-width: 1000px;
+  height: auto;
+  min-height: 0;
+  margin: 0 auto;
+  padding: 24px;
+  padding-bottom: 40px;
+  overflow: visible;
+}
+
+.report-hero h2 {
+  color: white !important;
+}
+
+.ai-report-result {
+  overflow-wrap: anywhere;
+}
+
+.ai-report-result p {
+  white-space: pre-wrap;
+  line-height: 1.8;
+}
+
+/* MODALS */
 
 .modal-overlay {
   position: fixed;
@@ -682,6 +808,8 @@ h1, h2, h3 {
 .modal-card {
   width: 100%;
   max-width: 420px;
+  max-height: 90dvh;
+  overflow-y: auto;
   background: white;
   border-radius: 22px;
   padding: 25px;
@@ -704,6 +832,8 @@ h1, h2, h3 {
   gap: 10px;
   margin-top: 24px;
 }
+
+/* CHAT HISTORY */
 
 .history-sheet {
   position: absolute;
@@ -752,460 +882,39 @@ h1, h2, h3 {
   font-weight: 700;
 }
 
+/* SCROLLBAR */
 
-@media (min-width: 900px) {
-  .app-shell {
-    width: 100%;
-    max-width: none;
-    margin: 0;
-    border: none;
-  }
-
-  .page-content {
-    width: 100%;
-    max-width: none;
-    padding: 30px 45px;
-  }
+::-webkit-scrollbar {
+  width: 7px;
 }
 
-
-@media (max-width: 480px) {
-  .page-content {
-    padding: 18px;
-  }
-
-  .auth-screen {
-    padding: 24px;
-  }
-
-  .modal-actions {
-    flex-wrap: wrap;
-  }
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-
-/* ===== FULL SCREEN CHAT ALIGNMENT FIX ===== */
-
-html,
-body,
-#root {
-  min-height: 100%;
+::-webkit-scrollbar-thumb {
+  background: #bfd5d5;
+  border-radius: 10px;
 }
 
-body {
-  margin: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
-.app-shell {
-  width: 100%;
-  max-width: none;
-  height: 100dvh;
-  margin: 0;
-}
-
-.main-area {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.main-area > .tab-panel {
-  height: 100%;
-  min-height: 0;
-}
-
-.chat-page {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.chat-header {
-  flex-shrink: 0;
-  background: #f5f9fb;
-  z-index: 2;
-}
-
-.chat-messages {
-  flex: 1;
-  min-height: 0;
-  width: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 24px 30px;
-  scroll-behavior: smooth;
-}
-
-.message-list {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-  gap: 14px;
-}
-
-.message {
-  display: block;
-  width: fit-content;
-  max-width: min(78%, 750px);
-  padding: 15px 18px;
-  border-radius: 18px;
-  line-height: 1.55;
-  overflow-wrap: anywhere;
-  white-space: pre-wrap;
-}
-
-.message.mine {
-  align-self: flex-end;
+::-webkit-scrollbar-thumb:hover {
   background: #08a999;
-  color: white;
-}
-
-.message.theirs {
-  align-self: flex-start;
-  background: white;
-  color: #183b4c;
-}
-
-.chat-input-bar {
-  flex-shrink: 0;
-  width: 100%;
-  background: white;
-  border-top: 1px solid #e5edf0;
-  padding: 12px 24px;
-}
-
-.bottom-nav {
-  flex-shrink: 0;
-  width: 100%;
-}
-
-@media (max-width: 600px) {
-  .chat-messages {
-    padding: 16px;
-  }
-
-  .message {
-    max-width: 88%;
-  }
-
-  .chat-input-bar {
-    padding: 10px 14px;
-  }
 }
 
 
-@media (min-width: 900px) {
-  .page-content {
-    padding: 20px 32px;
-  }
-
-  .page-content h1 {
-    font-size: 24px;
-  }
-
-  .chat-messages {
-    padding: 16px 24px;
-  }
-
-  .message {
-    font-size: 14px;
-    padding: 12px 15px;
-  }
-
-  .app-header {
-    min-height: 58px;
-  }
-
-  .nav-item {
-    padding: 6px 4px;
-  }
-}
-
-
-
-/* ===== CORRECTED APP SCROLLING ===== */
-html, body, #root {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
-
-.app-shell {
-  height: 100dvh;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.app-header,
-.bottom-nav {
-  flex-shrink: 0;
-}
-
-/* Appointments, doctors, booking and home scroll inside the shell. */
-.main-area {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-}
-
-/* Content panels must grow to show all cards, not clip at viewport height. */
-.main-area > .tab-panel:not(:has(.chat-page)) {
-  height: auto;
-  min-height: 100%;
-}
-
-.appointment-list {
-  height: auto;
-  overflow: visible;
-  padding-bottom: 24px;
-}
-
-/* Chat keeps its own message-scrolling region. */
-.main-area:has(.chat-page) {
-  overflow: hidden;
-}
-
-.main-area > .tab-panel:has(.chat-page) {
-  height: 100%;
-  min-height: 0;
-}
-
-.chat-page {
-  height: 100%;
-  min-height: 0;
-}
-
-
-/* MY BOOKINGS — INDEPENDENT SCROLL FIX */
-
-/* Stop the entire page from scrolling */
-html, body, #root {
-  height: 100%;
-  overflow: hidden;
-}
-
-/* Keep the application layout fixed */
-.app-shell {
-  height: 100dvh;
-  overflow: hidden;
-}
-
-/* Prevent the outer area from scrolling on bookings */
-.main-area:has(.appointment-list) {
-  overflow: hidden !important;
-  min-height: 0;
-}
-
-/* Make the appointments screen fill available space */
-.tab-panel:has(.appointment-list) {
-  height: 100% !important;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Keep My Appointments heading above the scroll area */
-.tab-panel:has(.appointment-list) .page-content {
-  flex: 1;
-  min-height: 0;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.tab-panel:has(.appointment-list) .page-heading-row {
-  flex-shrink: 0;
-}
-
-/* ONLY THE DOCTOR APPOINTMENT CARDS SCROLL */
-.appointment-list {
-  flex: 1 1 auto;
-  min-height: 0;
-  height: auto;
-  overflow-y: auto !important;
-  overflow-x: hidden;
-  overscroll-behavior: contain;
-  align-content: start;
-  padding-bottom: 30px;
-  scrollbar-width: thin;
-}
-
-/* Keep bottom navigation visible */
-.bottom-nav {
-  flex-shrink: 0;
-}
-
-
-/* =========================================
-   ALL PAGES — INDEPENDENT CONTENT SCROLL
-   Keep existing MY BOOKINGS fix
-========================================= */
-
-/* Keep entire application inside screen */
-html,
-body,
-#root {
-  height: 100%;
-  overflow: hidden;
-}
-
-.app-shell {
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* Fixed top header and bottom navigation */
-.app-header,
-.bottom-nav {
-  flex-shrink: 0;
-}
-
-/* Prevent outer page scrolling */
-.main-area {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: hidden !important;
-}
-
-/* Each tab fills the available screen */
-.main-area > .tab-panel {
-  height: 100%;
-  min-height: 0;
-}
-
-/* HOME, DOCTORS, BOOK APPOINTMENT:
-   Scroll their content, not the entire page */
-.tab-panel:not(:has(.appointment-list)):not(:has(.chat-page)) {
-  overflow-y: auto !important;
-  overflow-x: hidden;
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
-}
-
-/* Ensure content has space at the bottom */
-.tab-panel:not(:has(.appointment-list)):not(:has(.chat-page))
-.page-content {
-  min-height: 100%;
-  height: auto;
-  padding-bottom: 40px;
-}
-
-/* BOOKINGS:
-   Preserve your working independent list scroll */
-.tab-panel:has(.appointment-list) {
-  height: 100%;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.tab-panel:has(.appointment-list) .page-content {
-  flex: 1;
-  min-height: 0;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.appointment-list {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto !important;
-  overflow-x: hidden;
-  overscroll-behavior: contain;
-  align-content: start;
-  padding-bottom: 30px;
-}
-
-/* CAREBOT:
-   Only chat messages scroll */
-.tab-panel:has(.chat-page) {
-  overflow: hidden;
-}
-
-.chat-page {
-  height: 100%;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.chat-messages {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto !important;
-  overscroll-behavior: contain;
-}
-
-
-/* =====================================
-   DOCTORS PAGE — INDEPENDENT SCROLL FIX
-   Same behavior as My Bookings
-===================================== */
-
-/* Prevent the outer Doctors page from scrolling */
-.main-area:has(.doctor-list) {
-  overflow: hidden !important;
-  min-height: 0;
-}
-
-/* Make Doctors tab fill the available space */
-.tab-panel:has(.doctor-list) {
-  height: 100% !important;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* Make the Doctors page a vertical layout */
-.tab-panel:has(.doctor-list) .page-content {
-  flex: 1 1 auto;
-  min-height: 0;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* Keep heading and search controls fixed */
-.tab-panel:has(.doctor-list) .page-content > :not(.doctor-list) {
-  flex-shrink: 0;
-}
-
-/* Scroll ONLY the doctor cards */
-.doctor-list {
-  flex: 1 1 auto;
-  min-height: 0;
-  height: auto;
-  overflow-y: auto !important;
-  overflow-x: hidden;
-  overscroll-behavior: contain;
-  align-content: start;
-  padding-bottom: 30px;
-  scrollbar-width: thin;
-}
-
-/* Keep navigation fixed */
-.app-header,
-.bottom-nav {
-  flex-shrink: 0;
-}
+/* Premium patient workspace */
+:root{--teal:#0d9488;--ink:#17283e;--background:#f1f5f9;--muted:#64748b}
+body{font-family:Inter,"Segoe UI",Arial,sans-serif;color:var(--ink)}
+button{transition:background .18s,box-shadow .18s,transform .18s}
+button:focus-visible,a:focus-visible{outline:3px solid #14b8a6;outline-offset:3px}
+.primary-btn:hover:not(:disabled),.send-button:hover:not(:disabled){background:#08786e}
+.app-header{background:white;min-height:76px;padding:0 30px;border-color:#e2e8f0}
+.brand small,.nav-brand small{display:block;font-size:11px;font-weight:500;margin-top:3px;color:var(--muted)}
+.profile-group{display:flex;align-items:center;gap:12px}.profile-avatar{display:grid;place-items:center;background:#ccfbf1;color:#0f766e;width:40px;height:40px;border-radius:14px}.profile-name{font-size:14px;font-weight:600}.logout-btn{border-radius:12px}.logout-btn:hover{background:#f1f5f9}
+.main-area{position:relative;min-width:0;overflow:hidden!important}.main-area>div,.main-area>.tab-panel{height:100%;min-height:0;overflow-y:auto;overflow-x:hidden}.main-area>div[hidden]{display:none!important}.main-area>.tab-panel:has(.chat-page){overflow:hidden}
+.page-content{max-width:1320px;padding:32px 36px 44px}.page-content h1{font-size:32px;letter-spacing:-1px}.eyebrow{font-size:11px;font-weight:800;letter-spacing:2px;color:var(--teal)}.welcome-heading h1{margin-top:10px}.hero-card{position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:250px;padding:34px 38px;background:linear-gradient(115deg,#075e68,#0d9488 65%,#20b6a4);box-shadow:0 16px 36px #0d94882b}.hero-copy{max-width:580px;z-index:1}.hero-label{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1.6px;background:#ffffff24;border:1px solid #ffffff40;border-radius:20px;padding:7px 12px}.hero-card h2{font-size:clamp(26px,3.2vw,42px);line-height:1.12;letter-spacing:-1px}.hero-card p{color:#e1fffa;max-width:480px}.hero-button{padding:14px 18px;color:#075e68}.hero-art{flex:0 0 220px;display:grid;place-items:center}.hero-orbit{width:185px;height:185px;border-radius:50%;display:grid;place-items:center;background:#ffffff18;border:1px solid #ffffff55;box-shadow:0 0 0 25px #ffffff0b,0 0 0 50px #ffffff09;color:white}.section-title{margin:30px 0 16px}.quick-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}.quick-card{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:12px;min-height:170px;text-align:left;padding:20px;background:white;border:1px solid #e2e8f0;border-radius:20px;color:var(--ink);box-shadow:0 4px 16px #17283e06}.quick-card:hover{transform:translateY(-3px);border-color:#5eead4;box-shadow:0 12px 28px #0d948814}.quick-card strong{font-size:16px}.quick-card small{color:var(--muted);line-height:1.5}.quick-arrow{position:absolute;right:16px;top:22px;color:var(--teal)}.round-icon{border-radius:15px}.quick-card:nth-child(2) .round-icon{background:#e0e7ff;color:#4f46e5}.quick-card:nth-child(3) .round-icon{background:#fef3c7;color:#b45309}.quick-card:nth-child(4) .round-icon{background:#f3e8ff;color:#9333ea}.notice-card{margin-top:24px;border:1px solid #fde68a;background:#fffbeb;color:#92400e}.notice-card svg{flex-shrink:0}
+.nav-brand,.nav-caption,.nav-footer{display:none}.nav-item:hover{background:#e2f7f2}.doctor-list,.appointment-list{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));align-items:start}.doctor-card,.appointment-card,.booking-section{padding:24px;border-radius:20px;border:1px solid #e2e8f0;background:white;box-shadow:0 5px 18px #17283e08}.doctor-card .card-actions .primary-btn{width:100%}.doctor-search input{border-color:#cbd5e1}.chat-header{background:white;padding:20px 30px}.chat-messages{padding:24px 30px}.chat-welcome{max-width:650px}.bot-avatar{width:86px;height:86px;border-radius:26px;background:linear-gradient(135deg,#0d9488,#075e68);color:white;box-shadow:0 10px 30px #0d948833}.chat-welcome h2{font-size:30px}.suggestion:hover{border-color:var(--teal);background:#f0fdfa}.message.theirs{border:1px solid #e2e8f0;box-shadow:0 3px 10px #17283e06}.message.mine{border-bottom-right-radius:4px}.message.theirs{border-bottom-left-radius:4px}.chat-input-bar{padding:16px 24px;background:white}.chat-input-bar>input{background:#f1f5f9;border-radius:14px}.send-button{border-radius:14px;width:48px;height:48px}.auth-screen{background:radial-gradient(ellipse at 15% 10%,#ccfbf1,transparent 55%),linear-gradient(135deg,#f8fafc,#e2e8f0)}.auth-box{background:white;padding:36px;border:1px solid #e2e8f0;border-radius:28px;box-shadow:0 25px 80px #17283e18;max-width:470px}.field{border-color:#cbd5e1}.history-sheet{bottom:auto;top:50%;transform:translate(-50%,-50%);border-radius:22px;max-width:min(600px,92vw)}
+@media(min-width:900px){.app-shell{display:grid;grid-template-columns:250px minmax(0,1fr);grid-template-rows:76px minmax(0,1fr)}.app-header{grid-column:2;grid-row:1}.main-area{grid-column:2;grid-row:2}.bottom-nav{grid-column:1;grid-row:1/3;display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;gap:8px;background:#0f172a;border:0;padding:28px 16px;color:white;overflow-y:auto}.nav-brand{display:flex;align-items:center;gap:10px;color:#5eead4;margin:0 5px 32px}.nav-brand strong{color:white;font-size:18px}.nav-brand small{color:#94a3b8;font-size:9px;letter-spacing:1px}.nav-caption{display:block;font-size:10px;letter-spacing:1.5px;color:#94a3b8;padding:0 12px 8px}.nav-item{flex:0 0 auto;flex-direction:row;justify-content:flex-start;gap:12px;padding:15px 14px;color:#cbd5e1;font-size:14px}.nav-item.active{background:#0d9488;color:white}.nav-item:hover:not(.active){background:#1e293b}.nav-footer{display:flex;align-items:center;gap:8px;margin-top:auto;padding:16px 10px;color:#94a3b8;font-size:12px}.app-header .brand>svg{display:none}}
+@media(max-width:1200px){.quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.page-content{padding:20px 16px 30px}.page-content h1{font-size:27px}.app-header{min-height:64px;padding:0 14px}.profile-name{display:none}.hero-card{padding:24px;min-height:0}.hero-art{display:none}.quick-grid{gap:10px}.quick-card{padding:14px;min-height:155px}.quick-card strong{font-size:14px}.quick-arrow{right:10px;top:15px}.chat-header,.chat-messages{padding:14px}.chat-input-bar{padding:10px}.message{max-width:90%}.auth-box{padding:24px}.reports-page{padding:16px}.nav-item{font-size:11px}.nav-item svg{width:20px}.brand strong{font-size:18px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}

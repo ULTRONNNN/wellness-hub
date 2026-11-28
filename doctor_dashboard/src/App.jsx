@@ -219,6 +219,9 @@ function App() {
     setDoctor(null);
     setAppointments([]);
     setPassword('');
+    setSlotsText('');
+    setSearch('');
+    setFilter('all');
     setPage('overview');
     setError('');
     setNotice('');
@@ -334,8 +337,8 @@ function App() {
         } successfully.`
       );
     } catch (err) {
-      setError(err.message);
       await loadData(session.token, true);
+      setError(err.message);
     } finally {
       setSaving(false);
     }
@@ -455,6 +458,7 @@ function App() {
   if (!session) {
     return (
       <div className="login-page">
+        <div className="login-intro"><HeartPulse size={48}/><span className="eyebrow">WELLNESS HUB / CLINICAL WORKSPACE</span><h1>Better care starts with a better workspace.</h1><p>Manage your consultations, daily availability and patient appointments in one place.</p><div className="intro-note"><ShieldCheck size={22}/> Authorized doctor access</div></div>
         <div className="login-card">
           <div className="brand">
             <HeartPulse size={34} />
@@ -647,7 +651,7 @@ function App() {
                       doctor?.name ||
                       session.user?.name ||
                       'Doctor'
-                    } 👋
+                    }
                   </h1>
 
                   <p>
@@ -675,12 +679,18 @@ function App() {
                       </div>
 
                       <span>{s.label}</span>
-                      <strong>{s.value}</strong>
+                      <strong>{doctor ? s.value : "—"}</strong>
                     </div>
                   );
                 })}
               </div>
 
+              <div className="overview-grid">
+                <section className="panel analytics"><h3>Appointment distribution</h3><p className="muted">All assigned appointment records</p>
+                  {stats.slice(1).map((s, i) => <div className="analytics-row" key={s.label}><span>{s.label}</span><div className="bar-track"><div className={`bar-fill bar-${i}`} style={{width: `${total ? s.value / total * 100 : 0}%`}} /></div><strong>{doctor ? s.value : "—"}</strong></div>)}
+                </section>
+                <section className="panel next-panel"><div className="stat-icon"><CalendarDays size={22}/></div><h3>Upcoming consultations</h3><strong className="big-number">{doctor ? upcoming : '—'}</strong><p className="muted">Active bookings from now onward</p><button className="secondary" onClick={() => setPage('appointments')}>View appointments</button></section>
+              </div>
               <section className="panel">
                 <div className="panel-head">
                   <div>
@@ -791,6 +801,7 @@ function App() {
                   />
                 </label>
 
+                <div className="slot-preview" aria-label="Time slot preview">{[...new Set(slotsText.split(/[,\n]+/).map(s => s.trim()).filter(s => /^([01]\d|2[0-3]):[0-5]\d$/.test(s)))].sort().map(slot => <span key={slot}><Clock3 size={14}/>{slot}</span>)}</div>
                 <p className="hint">
                   Separate times using commas or new lines.
                   Example: 09:00, 10:30, 14:00.
@@ -857,7 +868,7 @@ function App() {
                   ],
                   [
                     'Account Status',
-                    doctor?.isActive === false
+                    !doctor ? '—' : doctor.isActive === false
                       ? 'Inactive'
                       : 'Active'
                   ]

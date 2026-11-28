@@ -1,5 +1,5 @@
-
 import 'dotenv/config';
+import { createReportRouter } from './reports/reportRoutes.js';
 import express from 'express';
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
@@ -27,10 +27,20 @@ const ACTIVE = ['booked', 'pending', 'confirmed'];
 app.use(helmet());
 
 app.use(cors({
-  origin: (process.env.CORS_ORIGINS ||
-    'http://localhost:5173,http://localhost:5174,http://localhost:5175')
-    .split(',')
-    .map(s => s.trim())
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://localhost:5175",
+    "http://localhost:5176",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5174",
+    "http://127.0.0.1:5175",
+    "http://127.0.0.1:5176"
+  ],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+  optionsSuccessStatus: 204
 }));
 
 app.use(express.json({ limit: '32kb' }));
@@ -198,7 +208,8 @@ app.get('/api/health', (_req, res) => {
   res.json({
     ok: true,
     service: 'Wellness Hub API',
-    timezone: TIMEZONE
+    timezone: TIMEZONE,
+    aiConfigured: Boolean(process.env.OPENAI_API_KEY?.trim())
   });
 });
 
@@ -271,6 +282,29 @@ app.get('/api/auth/me', auth, safe(async (req, res) => {
 
 // ---------- EXISTING CAREBOT ----------
 
+const chatLimit = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 15,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { error: 'Too many chat requests. Please wait a minute.' }
+});
+
+// Prevent overlapping chat requests for the same patient in this process.
+const activeChats = new Set();
+function chatLock(req, res, next) {
+  const id = String(req.identity.id);
+  if (activeChats.has(id)) {
+    return res.status(409).json({ error: 'A chat request is already processing.' });
+  }
+  activeChats.add(id);
+  next();
+}
+const safeChat = fn => safe(async (req, res, next) => {
+  try { await fn(req, res, next); }
+  finally { activeChats.delete(String(req.identity.id)); }
+});
+
 app.get(
   '/api/chat/conversations',
   auth,
@@ -291,7 +325,9 @@ app.post(
   '/api/chat',
   auth,
   allow('patient'),
-  safe(async (req, res) => {
+  chatLimit,
+  chatLock,
+  safeChat(async (req, res) => {
     const { message, conversationId } = z.object({
       message: z.string().trim().min(1).max(2000),
       conversationId: z.string().optional()
@@ -346,6 +382,10 @@ app.post(
         : null
     });
 
+    if (typeof result?.reply !== 'string' || !result.reply.trim()) {
+      return res.status(502).json({ error: 'AI returned no usable response. Please retry.' });
+    }
+
     conversation.pendingBooking = result.pendingBooking
       ? {
           doctorId: result.pendingBooking.doctorId,
@@ -378,6 +418,13 @@ const doctorSchema = z.object({
   qualification: z.string().trim().max(160).default(''),
   experience: z.coerce.number().int().min(0).max(80).default(0),
   hospital: z.string().trim().max(160).default(''),
+  address: z.string().trim().max(300).optional(),
+
+city: z.string().trim().max(100).optional(),
+
+latitude: z.number().min(-90).max(90).optional(),
+
+longitude: z.number().min(-180).max(180).optional(),
   contact: z.string().trim().max(40).default(''),
   email: z.union([
     z.literal(''),
@@ -1255,7 +1302,12 @@ app.get(
     });
   })
 );
+// ---------- MEDICAL REPORTS ----------
 
+app.use(
+  '/api/reports',
+  createReportRouter(auth, allow)
+);
 // ---------- ERROR HANDLING ----------
 
 app.use((error, _req, res, _next) => {
@@ -1271,7 +1323,13 @@ app.use((error, _req, res, _next) => {
     });
   }
 
-  console.error(error);
+  if (error.type === 'entity.too.large') {
+    return res.status(413).json({ error: 'Request exceeds the supported size.' });
+  }
+  if (error.type === 'entity.parse.failed') {
+    return res.status(400).json({ error: 'Invalid JSON request.' });
+  }
+  console.error('API error:', error.name, error.code || error.status || 'unknown');
 
   res.status(500).json({
     error: 'Server error'

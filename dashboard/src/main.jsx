@@ -45,6 +45,10 @@ const emptyDoctor = {
   qualification: '',
   experience: 0,
   hospital: '',
+  address: '',
+  city: '',
+  latitude: '',
+  longitude: '',
   contact: '',
   email: '',
   bio: '',
@@ -185,20 +189,43 @@ function DoctorForm({ initial, onSave, onCancel, busy }) {
       return;
     }
 
-    onSave({
-      name: form.name.trim(),
-      specialty: form.specialty.trim(),
-      qualification: form.qualification || '',
-      experience: Number(form.experience || 0),
-      hospital: form.hospital || '',
-      contact: form.contact || '',
-      email: form.email || '',
-      bio: form.bio || '',
-      registrationNumber: form.registrationNumber || '',
-      consultationFee: Number(form.consultationFee || 0),
-      slots,
-      isActive: form.isActive
-    });
+    const lat = String(form.latitude ?? '').trim();
+const lng = String(form.longitude ?? '').trim();
+
+if (
+  (lat || lng) &&
+  (
+    !lat || !lng ||
+    !Number.isFinite(Number(lat)) ||
+    !Number.isFinite(Number(lng)) ||
+    Math.abs(Number(lat)) > 90 ||
+    Math.abs(Number(lng)) > 180
+  )
+) {
+  window.alert('Enter valid latitude and longitude.');
+  return;
+}
+
+onSave({
+  name: form.name.trim(),
+  specialty: form.specialty.trim(),
+  qualification: form.qualification || '',
+  experience: Number(form.experience || 0),
+  hospital: form.hospital || '',
+  address: (form.address || '').trim(),
+  city: (form.city || '').trim(),
+  ...(lat && lng ? {
+    latitude: Number(lat),
+    longitude: Number(lng)
+  } : {}),
+  contact: form.contact || '',
+  email: form.email || '',
+  bio: form.bio || '',
+  registrationNumber: form.registrationNumber || '',
+  consultationFee: Number(form.consultationFee || 0),
+  slots,
+  isActive: form.isActive
+});
   }
 
   function textField(label, field, type = 'text', required = false) {
@@ -239,6 +266,43 @@ function DoctorForm({ initial, onSave, onCancel, busy }) {
           {textField('Qualification', 'qualification')}
           {textField('Experience (years)', 'experience', 'number')}
           {textField('Hospital / Clinic', 'hospital')}
+          {textField('Hospital Address', 'address')}
+{textField('City', 'city')}
+
+<Field label="Latitude">
+  <input
+    style={inputStyle}
+    type="number"
+    step="any"
+    min="-90"
+    max="90"
+    value={form.latitude ?? ''}
+    placeholder="Enter latitude"
+    onChange={e => update('latitude', e.target.value)}
+  />
+</Field>
+
+<Field label="Longitude">
+  <input
+    style={inputStyle}
+    type="number"
+    step="any"
+    min="-180"
+    max="180"
+    value={form.longitude ?? ''}
+    placeholder="Enter longitude"
+    onChange={e => update('longitude', e.target.value)}
+  />
+</Field>
+
+<a
+  href="https://www.google.com/maps"
+  target="_blank"
+  rel="noopener noreferrer"
+  style={{ color: '#0f766e', fontWeight: 600 }}
+>
+  Find hospital coordinates on Google Maps
+</a>
           {textField('Contact Number', 'contact')}
           {textField('Email', 'email', 'email')}
           {textField('Medical Registration Number', 'registrationNumber')}
@@ -463,6 +527,13 @@ function App() {
     setNotice('');
     setLastUpdated(null);
     setAccountDoctor(null);
+    setAccountPassword('');
+    setAccountEmail('');
+    setOriginalAccountEmail('');
+    setSelectedPatient(null);
+    setPatientAppointments([]);
+    setShowDoctorForm(false);
+    setEditingDoctor(null);
   }
 
   // ======================================================
@@ -829,7 +900,7 @@ function App() {
   if (!session) {
     return (
       <div className="login-page">
-        <div className="login-card">
+        <div className="login-intro"><HeartPulse size={48}/><p className="eyebrow">WELLNESS HUB</p><h2>Better care starts with better management.</h2><p>One workspace for doctors, appointments and patient records.</p><div className="login-trust"><ShieldCheck size={20}/> Administrator access</div></div><div className="login-card">
           <div className="brand">
             <HeartPulse size={32} />
             Wellness<span>Hub</span>
@@ -1020,6 +1091,7 @@ function App() {
 
         {tab === 'overview' && (
           <>
+            <div className="admin-welcome"><div><p className="eyebrow">ADMIN WORKSPACE</p><h2>Welcome back, {session.user.name || 'Administrator'}.</h2><p>Manage your healthcare network from one central workspace.</p><button onClick={() => setTab('doctors')}><Stethoscope size={18}/> Manage doctors</button></div><HeartPulse className="welcome-art" size={120}/></div>
             <div className="metrics">
               <div className="metric">
                 <div className="metric-icon teal">
@@ -1067,6 +1139,7 @@ function App() {
               </div>
             </div>
 
+            <section className="panel analytics"><div className="panel-head"><div><h2>Appointment distribution</h2><p className="muted">Status breakdown of loaded appointment records</p></div><span className="count">{appointments.length} records</span></div><div className="analytics-bars">{['booked','pending','confirmed','completed','cancelled'].map(status => { const count = appointments.filter(a => a.status === status).length; return <div className="analytics-row" key={status}><span>{statusLabel(status)}</span><div className="bar-track"><div className={'bar-fill '+status} style={{width: `${appointments.length ? count / appointments.length * 100 : 0}%`}}/></div><b>{count}</b></div>; })}</div></section>
             <div className="notice">
               <ShieldCheck size={23} />
               <div>
@@ -1111,7 +1184,7 @@ function App() {
               flexWrap: 'wrap',
               gap: 12,
               padding: '16px 20px'
-            }}>
+            }} className="appointment-filters">
               <div style={{
                 position: 'relative',
                 flex: '1 1 200px'

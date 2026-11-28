@@ -38,15 +38,14 @@ function formatIST(value) {
 // ==================================================
 
 function cleanReply(text) {
-  return String(text || '')
-    .replace(/\*\*(.*?)\*\*/gs, '$1')
-    .replace(/__(.*?)__/gs, '$1')
-    .replace(/^\s{0,3}#{1,6}\s+/gm, '')
-    .replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g, '$1')
-    .replace(/`([^`\n]+)`/g, '$1')
-    .replace(/^\s*[-*]\s+/gm, '• ')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
+  return String(text || '').trim();
+}
+
+const ACTIVE = ['booked', 'pending', 'confirmed'];
+function indianDate(value) {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit'
+  }).format(new Date(value));
 }
 
 // ==================================================
@@ -94,6 +93,7 @@ async function searchDoctors(args) {
 
   if (specialty) {
     doctors = await Doctor.find({
+      isActive: { $ne: false },
       specialty: {
         $regex: `^${escapeRegex(specialty)}$`,
         $options: 'i'
@@ -105,6 +105,7 @@ async function searchDoctors(args) {
     const inferred = specialtyFor(query);
 
     doctors = await Doctor.find({
+      isActive: { $ne: false },
       $or: [
         { specialty: inferred },
         {
@@ -118,7 +119,7 @@ async function searchDoctors(args) {
   }
 
   if (!doctors.length && !query && !specialty) {
-    doctors = await Doctor.find({})
+    doctors = await Doctor.find({ isActive: { $ne: false } })
       .limit(35)
       .lean();
   }
@@ -145,7 +146,7 @@ async function availableSlots(doctorId, date) {
 
   const doctor = await Doctor.findById(doctorId).lean();
 
-  if (!doctor) {
+  if (!doctor || doctor.isActive === false) {
     return { error: 'Doctor not found.' };
   }
 
@@ -154,7 +155,7 @@ async function availableSlots(doctorId, date) {
 
   const booked = await Appointment.find({
     doctorId,
-    status: 'booked',
+    status: { $in: ACTIVE },
     slot: {
       $gte: start,
       $lt: end
@@ -166,9 +167,8 @@ async function availableSlots(doctorId, date) {
   );
 
   const slots = (doctor.slots || [])
-    .map(time =>
-  new Date(`${date}T${time}:00+05:30`).toISOString()
-)
+    .filter(time => /^([01]\d|2[0-3]):[0-5]\d$/.test(time))
+    .map(time => new Date(`${date}T${time}:00+05:30`).toISOString())
     .filter(value => {
       const parsed = new Date(value);
 
@@ -217,13 +217,13 @@ async function confirmBooking(patientId, pendingBooking) {
 
   const doctor = await Doctor.findById(doctorId);
 
-  if (!doctor) {
+  if (!doctor || doctor.isActive === false) {
     return {
       reply: 'The selected doctor is no longer available.'
     };
   }
 
-  const date = slot.toISOString().slice(0, 10);
+  const date = indianDate(slot);
   const availability = await availableSlots(doctorId, date);
 
   if (
@@ -281,7 +281,7 @@ async function listMyAppointments(patientId) {
 
   const appointments = await Appointment.find({
     patientId,
-    status: 'booked'
+    status: { $in: ACTIVE }
   })
     .populate('doctorId', 'name specialty hospital contact email')
     .sort({ slot: 1 })
@@ -329,7 +329,7 @@ async function cancelAppointment(patientId, appointmentId) {
     {
       _id: appointmentId,
       patientId,
-      status: 'booked'
+      status: { $in: ACTIVE }
     },
     {
       $set: {
@@ -483,7 +483,7 @@ export async function respond(
       reply: EMERGENCY_MESSAGE,
       sources: ['Emergency symptoms'],
       emergency: true,
-      pendingBooking
+      pendingBooking: null
     };
   }
 
@@ -526,10 +526,11 @@ export async function respond(
 
   const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
-    timeout: 30000
+    timeout: 60000,
+    maxRetries: 1
   });
 
-  const sources = retrieve(latest, 3);
+  const sources = retrieve(latest, 3) || [];
 
   const system = `
 You are CareBot, the intelligent AI assistant for Wellness Hub.
@@ -582,10 +583,10 @@ APPOINTMENT CANCELLATION:
   an existing confirmed appointment.
 
 RESPONSE FORMATTING:
-- Always use plain text.
-- Never use Markdown formatting.
-- Never use asterisks for bold or italics.
-- Never use Markdown headings or tables.
+- Use clear paragraphs, Markdown headings, lists and code blocks when helpful.
+- Answer general questions directly; medical retrieval is optional context, not a restriction.
+- Do not invoke appointment tools for unrelated questions.
+- Ask relevant follow-up questions when useful.
 - Use short paragraphs and numbered lists.
 - Use emojis sparingly.
 - Keep responses clear and friendly.
@@ -628,14 +629,25 @@ ${sources.map((s, i) =>
 
   // Allow multiple tool calls for agent workflows.
   for (let round = 0; round < 8; round++) {
-    const completion = await client.chat.completions.create({
+    let completion;
+    try {
+      completion = await client.chat.completions.create({
       model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
       messages: chatMessages,
       tools,
       tool_choice: 'auto',
-      temperature: 0.2,
-      max_tokens: 1000
-    });
+      temperature: 0.5,
+      max_tokens: 2500
+      });
+    } catch (error) {
+      console.error('CareBot OpenAI error:', error.status || error.code || error.name);
+      const status = error.status;
+      const reply = status === 401 ? 'AI authentication failed. Ask the administrator to check the API key.'
+        : status === 429 ? 'AI usage limit reached. Ask the administrator to check API quota, billing or rate limits.'
+        : status === 403 || status === 404 ? 'AI model access failed. Ask the administrator to check the configured model and permissions.'
+        : 'The AI service is temporarily unavailable. Please try again shortly.';
+      return { reply, sources: [], emergency: false, pendingBooking: nextPending };
+    }
 
     const answer = completion.choices[0]?.message;
 
@@ -703,7 +715,7 @@ ${sources.map((s, i) =>
             };
           } else {
             const normalizedSlot = slot.toISOString();
-            const date = normalizedSlot.slice(0, 10);
+            const date = indianDate(normalizedSlot);
 
             const availability = await availableSlots(
               doctorId,
@@ -757,7 +769,8 @@ ${sources.map((s, i) =>
 
           // Confirm the latest user message requests cancellation.
           const cancellationRequested =
-            /\b(cancel|cancellation|call off)\b/i.test(latest);
+            /\b(cancel|call off)\b/i.test(latest) &&
+            !/\b(how|policy|policies|what if|can i|could i|should i|do not|don't|never)\b/i.test(latest);
 
           if (!cancellationRequested) {
             result = {
@@ -850,7 +863,7 @@ ${sources.map((s, i) =>
   return {
     reply:
       'I could not complete that request automatically. ' +
-      'Please try again with the doctor name or booking ID.',
+      'Please rephrase your question or try again in a moment.',
     sources: sources.map(s => s.title),
     emergency: false,
     pendingBooking: nextPending

@@ -36,6 +36,27 @@ export const Doctor = model('Doctor', new Schema({
   qualification: String,
   experience: Number,
   hospital: String,
+  address: {
+  type: String,
+  default: ''
+},
+
+city: {
+  type: String,
+  default: ''
+},
+
+latitude: {
+  type: Number,
+  min: -90,
+  max: 90
+},
+
+longitude: {
+  type: Number,
+  min: -180,
+  max: 180
+},
   contact: String,
   email: String,
   bio: String,
